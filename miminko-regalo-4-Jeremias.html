@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miminko · Tu mensaje de regalo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --violeta: #8D89A6;
+      --salmon: #FFCDBC;
+      --verde: #87B5C4;
+      --rosa: #FCECED;
+      --amarillo: #F2DFAA;
+      --texto: #4a4660;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--rosa);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 48px 0;
+      overflow-x: hidden;
+    }
+
+    /* ── Encabezado ── */
+    header {
+      width: 100%;
+      background-color: var(--violeta);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before, header::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.18;
+    }
+    header::before {
+      width: 180px; height: 180px;
+      background: var(--salmon);
+      top: -60px; right: -40px;
+    }
+    header::after {
+      width: 120px; height: 120px;
+      background: var(--amarillo);
+      bottom: -40px; left: -20px;
+    }
+
+    .logo-wrap {
+      width: 250px;
+      height: 167px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      margin-bottom: 14px;
+      flex-shrink: 0;
+      animation: popIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: #fff;
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      letter-spacing: 0.5px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    header p.sub {
+      color: rgba(255,255,255,0.78);
+      font-size: 0.88rem;
+      margin-top: 6px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.35s ease both;
+    }
+
+    /* ── Tarjeta principal ── */
+    main {
+      width: min(100%, 560px);
+      padding: 0 16px;
+      margin-top: -18px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(141,137,166,0.14);
+      overflow: hidden;
+      animation: fadeUp 0.7s 0.45s ease both;
+    }
+
+    /* ── Sección de audio ── */
+    .audio-section {
+      background: linear-gradient(160deg, var(--violeta) 0%, #a8a4c0 100%);
+      padding: 36px 24px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ondas decorativas de fondo */
+    .audio-section::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      border: 40px solid rgba(255,255,255,0.06);
+      top: -100px; right: -80px;
+    }
+    .audio-section::after {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      border: 30px solid rgba(255,255,255,0.06);
+      bottom: -60px; left: -50px;
+    }
+
+    /* ícono micrófono animado */
+    .mic-icon {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      backdrop-filter: blur(4px);
+      z-index: 1;
+    }
+    .mic-icon::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .mic-icon::after {
+      content: '';
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      animation: pulse 2s ease-in-out 0.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.5; }
+    }
+
+    .audio-label {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+
+    /* ── Reproductor de audio personalizado ── */
+    .player-wrap {
+      width: 100%;
+      max-width: 380px;
+      z-index: 1;
+    }
+
+    /* ocultamos el player nativo */
+    audio {
+      display: none;
+    }
+
+    .custom-player {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-play {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #fff;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-play:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+    .btn-play:active { transform: scale(0.97); }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 9px 0 9px 16px;
+      border-color: transparent transparent transparent var(--violeta);
+      margin-left: 3px;
+      transition: all 0.15s;
+    }
+    .pause-icon {
+      display: none;
+      gap: 4px;
+    }
+    .pause-icon span {
+      display: block;
+      width: 4px;
+      height: 18px;
+      background: var(--violeta);
+      border-radius: 2px;
+    }
+
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .time-display {
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* barra de progreso */
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--salmon), var(--amarillo));
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* ondas de audio animadas (visualización decorativa) */
+    .wave-bars {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      height: 28px;
+    }
+    .wave-bars span {
+      display: block;
+      width: 3px;
+      background: rgba(255,255,255,0.5);
+      border-radius: 2px;
+      animation: wave 1.2s ease-in-out infinite;
+    }
+    .wave-bars span:nth-child(1)  { height: 8px;  animation-delay: 0s; }
+    .wave-bars span:nth-child(2)  { height: 16px; animation-delay: 0.1s; }
+    .wave-bars span:nth-child(3)  { height: 22px; animation-delay: 0.2s; }
+    .wave-bars span:nth-child(4)  { height: 14px; animation-delay: 0.3s; }
+    .wave-bars span:nth-child(5)  { height: 20px; animation-delay: 0.15s; }
+    .wave-bars span:nth-child(6)  { height: 10px; animation-delay: 0.25s; }
+    .wave-bars span:nth-child(7)  { height: 18px; animation-delay: 0.05s; }
+    .wave-bars span:nth-child(8)  { height: 24px; animation-delay: 0.35s; }
+    .wave-bars span:nth-child(9)  { height: 12px; animation-delay: 0.2s; }
+    .wave-bars span:nth-child(10) { height: 8px;  animation-delay: 0.1s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(1); opacity: 0.5; }
+      50% { transform: scaleY(1.6); opacity: 1; }
+    }
+
+    /* las ondas se detienen cuando no está reproduciendo */
+    .wave-bars.paused span {
+      animation-play-state: paused;
+    }
+
+    /* ── Cuerpo de la tarjeta ── */
+    .card-body {
+      padding: 24px 24px 28px;
+    }
+
+    .etiqueta {
+      display: inline-block;
+      background: var(--salmon);
+      color: var(--texto);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 14px;
+    }
+
+    .card-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      color: var(--texto);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .card-body p.desc {
+      color: #7a7890;
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    /* ── Separador ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 18px;
+    }
+    .divider span {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e0ddf0, transparent);
+    }
+    .divider .icon { font-size: 1.1rem; }
+
+    /* ── Detalles ── */
+    .detalle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .detalle-item {
+      background: var(--rosa);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .detalle-item .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--violeta);
+      margin-bottom: 3px;
+    }
+    .detalle-item .value {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--texto);
+    }
+
+    /* ── Mensaje ── */
+    .mensaje-box {
+      background: linear-gradient(135deg, #f0eef8, var(--rosa));
+      border-left: 4px solid var(--violeta);
+      border-radius: 0 14px 14px 0;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+    }
+    .mensaje-box .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--violeta);
+      margin-bottom: 8px;
+    }
+    .mensaje-box p {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--texto);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ── Pie ── */
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      animation: fadeUp 0.7s 0.6s ease both;
+    }
+    footer .marca {
+      font-size: 0.78rem;
+      color: #aaa8be;
+    }
+    footer .marca a {
+      color: var(--violeta);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    footer .marca a:hover { text-decoration: underline; }
+
+    /* ── Animaciones ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 380px) {
+      .detalle-grid { grid-template-columns: 1fr; }
+      .card-body { padding: 18px 16px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-wrap">
+      <img src="https://dcdn-us.mitiendanube.com/stores/007/499/280/themes/brasilia/2-img-5063945305691961981-1777232354-bf89a833dc5cd7ff47534f6410d847cd1777232354-1400-1400.webp?3487527165646826360" alt="Miminko logo" />
+    </div>
+    <h1>Un regalo con amor</h1>
+    <p class="sub">Alguien especial te dejó un mensaje</p>
+  </header>
+
+  <main>
+    <div class="card">
+
+      <!-- ══ AUDIO ═══════════════════════════════════════════
+           Reemplazá NOMBRE_ARCHIVO_AUDIO.mp3 por el nombre
+           real del archivo que subiste a GitHub.
+           Ejemplo: si subiste "audio-maria.mp3", escribí:
+           src="audio-maria.mp3"
+           (el archivo debe estar en la misma carpeta del repo)
+      ══════════════════════════════════════════════════════ -->
+      <audio id="audioPlayer" src="saludo_4_jeremias.mp3" preload="metadata"></audio>
+
+      <div class="audio-section">
+        <div class="mic-icon">🎙️</div>
+        <div class="audio-label">Mensaje de voz</div>
+
+        <div class="player-wrap">
+          <div class="custom-player">
+            <div class="player-controls">
+              <button class="btn-play" id="btnPlay" onclick="togglePlay()">
+                <span class="play-icon" id="playIcon"></span>
+                <span class="pause-icon" id="pauseIcon">
+                  <span></span><span></span>
+                </span>
+              </button>
+              <div class="player-info">
+                <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+                <div class="progress-bar" id="progressBar" onclick="seekAudio(event)">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+              </div>
+            </div>
+            <div class="wave-bars paused" id="waveBars">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <span class="etiqueta">Tu regalo especial 🎁</span>
+
+        <h2>¡Escuchá el mensaje que te dejaron!</h2>
+        <p class="desc">Escaneaste el código QR de tu paquete Miminko. Alguien pensó en el bebé con mucho cariño 💜</p>
+
+        <div class="divider">
+          <span></span>
+          <span class="icon">✦</span>
+          <span></span>
+        </div>
+
+        <!-- ══ DETALLES DEL REGALO ══════════════════════════
+             Editá estos campos para cada pedido
+        ══════════════════════════════════════════════════════ -->
+        <div class="detalle-grid">
+          <div class="detalle-item">
+            <div class="label">Para</div>
+            <div class="value">Jeremías</div>
+          </div>
+          <div class="detalle-item">
+            <div class="label">De parte de</div>
+            <div class="value">Marcelo y Viviana</div>
+          </div>
+        </div>
+
+        <!-- ══ MENSAJE OPCIONAL ════════════════════════════
+             Podés dejarlo vacío o borrarlo si no hay mensaje escrito
+        ══════════════════════════════════════════════════════ -->
+        <!--
+        <div class="mensaje-box">
+          <div class="label">✍️ Mensaje escrito</div>
+          <p>"MENSAJE_PERSONALIZADO_ACÁ"</p>
+        </div>
+        -->
+
+      </div>
+    </div>
+
+    <footer>
+      <div class="marca">🛍️ Visitá nuestra tienda · <a href="https://miminkostore.com/" target="_blank">Miminko</a></div>
+    </footer>
+  </main>
+
+  <script>
+    const audio = document.getElementById('audioPlayer');
+    const btnPlay = document.getElementById('btnPlay');
+    const playIcon = document.getElementById('playIcon');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const progressFill = document.getElementById('progressFill');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const waveBars = document.getElementById('waveBars');
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    audio.addEventListener('play', () => {
+      playIcon.style.display = 'none';
+      pauseIcon.style.display = 'flex';
+      waveBars.classList.remove('paused');
+    });
+
+    audio.addEventListener('pause', () => {
+      playIcon.style.display = 'block';
+      pauseIcon.style.display = 'none';
+      waveBars.classList.add('paused');
+    });
+
+    audio.addEventListener('ended', () => {
+      playIcon.style.display = 'block';
+      pauseIcon.style.display = 'none';
+      waveBars.classList.add('paused');
+      progressFill.style.width = '0%';
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (audio.duration) {
+        const pct = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = pct + '%';
+        timeDisplay.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+      }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      timeDisplay.textContent = `0:00 / ${formatTime(audio.duration)}`;
+    });
+
+    function seekAudio(e) {
+      const bar = document.getElementById('progressBar');
+      const rect = bar.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pct * audio.duration;
+    }
+  </script>
+
+</body>
+</html>
