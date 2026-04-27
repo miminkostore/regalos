@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Miminko · Tu mensaje de regalo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --violeta: #8D89A6;
+      --salmon: #FFCDBC;
+      --verde: #87B5C4;
+      --rosa: #FCECED;
+      --amarillo: #F2DFAA;
+      --texto: #4a4660;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--rosa);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 48px 0;
+      overflow-x: hidden;
+    }
+
+    /* ── Encabezado ── */
+    header {
+      width: 100%;
+      background-color: var(--violeta);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* burbujas decorativas */
+    header::before, header::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.18;
+    }
+    header::before {
+      width: 180px; height: 180px;
+      background: var(--salmon);
+      top: -60px; right: -40px;
+    }
+    header::after {
+      width: 120px; height: 120px;
+      background: var(--amarillo);
+      bottom: -40px; left: -20px;
+    }
+
+    .logo-wrap {
+      width: 250px;
+      height: 167px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      margin-bottom: 14px;
+      flex-shrink: 0;
+      animation: popIn 0.6s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: #fff;
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      letter-spacing: 0.5px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    header p.sub {
+      color: rgba(255,255,255,0.78);
+      font-size: 0.88rem;
+      margin-top: 6px;
+      text-align: center;
+      animation: fadeUp 0.7s 0.35s ease both;
+    }
+
+    /* ── Tarjeta principal ── */
+    main {
+      width: min(100%, 560px);
+      padding: 0 16px;
+      margin-top: -18px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(141,137,166,0.14);
+      overflow: hidden;
+      animation: fadeUp 0.7s 0.45s ease both;
+    }
+
+    /* ── Video ── */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      background: var(--violeta);
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ── Cuerpo de la tarjeta ── */
+    .card-body {
+      padding: 24px 24px 28px;
+    }
+
+    .etiqueta {
+      display: inline-block;
+      background: var(--salmon);
+      color: var(--texto);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 4px 14px;
+      margin-bottom: 14px;
+    }
+
+    .card-body h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      color: var(--texto);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    .card-body p.desc {
+      color: #7a7890;
+      font-size: 0.93rem;
+      line-height: 1.6;
+    }
+
+    /* ── Separador decorativo ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 18px;
+    }
+    .divider span {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e0ddf0, transparent);
+    }
+    .divider .icon { font-size: 1.1rem; }
+
+    /* ── Detalles del regalo ── */
+    .detalle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .detalle-item {
+      background: var(--rosa);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .detalle-item .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--violeta);
+      margin-bottom: 3px;
+    }
+    .detalle-item .value {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--texto);
+    }
+
+    /* ── Mensaje personal ── */
+    .mensaje-box {
+      background: linear-gradient(135deg, #f0eef8, var(--rosa));
+      border-left: 4px solid var(--violeta);
+      border-radius: 0 14px 14px 0;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+    }
+    .mensaje-box .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--violeta);
+      margin-bottom: 8px;
+    }
+    .mensaje-box p {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--texto);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ── Pie ── */
+    footer {
+      text-align: center;
+      margin-top: 28px;
+      animation: fadeUp 0.7s 0.6s ease both;
+    }
+    footer a {
+      color: var(--violeta);
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    footer a:hover { text-decoration: underline; }
+    footer .marca {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: #aaa8be;
+    }
+
+    /* ── Animaciones ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── Responsive pequeño ── */
+    @media (max-width: 380px) {
+      .detalle-grid { grid-template-columns: 1fr; }
+      .card-body { padding: 18px 16px 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-wrap">
+      <!-- Reemplazá esta URL por la URL pública de tu logo -->
+      <img src="https://dcdn-us.mitiendanube.com/stores/007/499/280/themes/brasilia/2-img-5063945305691961981-1777232354-bf89a833dc5cd7ff47534f6410d847cd1777232354-1400-1400.webp?3487527165646826360" alt="Miminko logo" />
+    </div>
+    <h1>Un regalo con amor</h1>
+    <p class="sub">Alguien especial te dejó un mensaje</p>
+  </header>
+
+  <main>
+    <div class="card">
+
+      <!-- ══ VIDEO ══════════════════════════════════════════
+           Reemplazá VIDEO_ID_YOUTUBE por el ID del video.
+           Ejemplo: si la URL es youtube.com/watch?v=dQw4w9WgXcQ
+           el ID es: dQw4w9WgXcQ
+		   src="https://www.youtube.com/embed/VIDEO_ID_YOUTUBE?rel=0&modestbranding=1"
+      ══════════════════════════════════════════════════════ -->
+      <div class="video-container">
+        <iframe
+          src="https://www.youtube.com/embed/hqwfL0dBT5M?rel=0&modestbranding=1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin">
+        </iframe>
+      </div>
+
+      <div class="card-body">
+        <span class="etiqueta">Tu regalo especial 🎁</span>
+
+        <h2>¡Mirá el mensaje que te dejaron!</h2>
+        <p class="desc">Escaneaste el código QR de tu paquete Miminko. Alguien pensó en el bebé con mucho cariño 💜</p>
+
+        <div class="divider">
+          <span></span>
+          <span class="icon">✦</span>
+          <span></span>
+        </div>
+
+        <!-- ══ DETALLES DEL REGALO ══════════════════════════
+             Editá estos campos para cada pedido
+        ══════════════════════════════════════════════════════ -->
+        <div class="detalle-grid">
+          <div class="detalle-item">
+            <div class="label">Para</div>
+            <div class="value">Pedro</div>
+          </div>
+          <div class="detalle-item">
+            <div class="label">De parte de</div>
+            <div class="value">Maria y David</div>
+          </div>
+        </div>
+
+        <!-- ══ MENSAJE OPCIONAL ════════════════════════════
+             Podés dejarlo vacío o sacarlo si no hay mensaje escrito
+        ══════════════════════════════════════════════════════ -->
+        
+
+      </div>
+    </div>
+
+    <footer>
+        
+      <div class="marca">🛍️ Visitá nuestra tienda · <a href="https://miminkostore.com/" target="_blank">Miminko</a></div>
+    </footer>
+  </main>
+
+</body>
+</html>
